@@ -1,7 +1,9 @@
 // Load the dataset (replace with your actual data source)
 d3.csv("gdp_c.csv").then(function(data) {
     // Parse the data as needed
-    // Example: Convert numerical strings to numbers using `+`
+    data.forEach(d => {
+        d.GDP = +d["1960"]; // Convert GDP values to numbers
+    });
 
     // Set up chart dimensions and margins
     const margin = { top: 50, right: 50, bottom: 50, left: 50 };
@@ -15,24 +17,47 @@ d3.csv("gdp_c.csv").then(function(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Function to draw the line chart
-    function drawLineChart(data) {
-        // Your code to draw the line chart goes here
+    // Set up scales
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.GDP)])
+        .range([0, width]);
+
+    const yScale = d3.scaleBand()
+        .domain(data.map(d => d["Country Name"]))
+        .range([0, height])
+        .padding(0.2);
+
+    // Function to update the chart based on the selected year
+    function updateChart(year) {
+        const newData = data.map(d => ({
+            country: d["Country Name"],
+            gdp: +d[year]
+        }));
+
+        const circles = svg.selectAll("circle")
+            .data(newData, d => d.country);
+
+        circles.enter()
+            .append("circle")
+            .merge(circles)
+            .transition()
+            .duration(500)
+            .attr("cx", d => xScale(d.gdp))
+            .attr("cy", d => yScale(d.country) + yScale.bandwidth() / 2)
+            .attr("r", d => Math.sqrt(d.gdp) / 5) // Adjust the circle size based on GDP value
+            .style("fill", "steelblue");
+
+        circles.exit()
+            .remove();
     }
 
-    // Call the function to draw the initial scene (e.g., Scene 1)
-    drawLineChart(data.filter(d => d["Country Name"] === "Africa Eastern and Southern"));
+    // Call the updateChart function initially with the default year
+    updateChart("1960");
 
-    // Event listeners for scene buttons
-    d3.select("#scene-1").on("click", function() {
-        const sceneData = data.filter(d => d["Country Name"] === "Africa Eastern and Southern");
-        drawLineChart(sceneData);
+    // Event listener for the year slider
+    d3.select("#yearRange").on("input", function() {
+        const selectedYear = this.value;
+        d3.select("#yearValue").text(selectedYear);
+        updateChart(selectedYear);
     });
-
-    d3.select("#scene-2").on("click", function() {
-        const sceneData = data.filter(d => d["Country Name"] === "Africa Western and Central");
-        drawLineChart(sceneData);
-    });
-
-    // Add more event listeners for additional scenes as needed
 });
