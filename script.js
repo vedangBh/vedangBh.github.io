@@ -1,5 +1,5 @@
 // Load the dataset (replace with your actual data source)
-d3.csv("gdp_c.csv").then(function(data) {
+d3.csv("https://github.com/vedangBh/vedangBh.github.io/blob/main/gdp_c.csv").then(function(data) {
     // Parse the data as needed
     data.forEach(d => {
         d.GDP = +d["1960"]; // Convert GDP values to numbers
