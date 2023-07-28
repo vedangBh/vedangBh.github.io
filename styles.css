@@ -1,0 +1,10 @@
+#chart-container {
+    margin: 20px auto;
+    text-align: center;
+}
+
+.scene-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+}
