@@ -1,18 +1,26 @@
+<h2 id="chart-title">GDP Visualization of Countries</h2>
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Narrative Visualization</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Narrative Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-simple-slider"></script>
+  <script src="https://unpkg.com/d3-annotation@3.1.1/build/d3-annotation.js"></script>
+
 </head>
 <body>
-    <div id="chart-container">
-        <svg id="chart"></svg>
-    </div>
-    <div id="year-slider">
-        <input type="range" min="1960" max="2020" value="1960" step="1" id="yearRange">
-        <span id="yearValue">1960</span>
-    </div>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="script.js"></script>
+  <div id="chart-container"></div>
+  <script src="script.js"></script>
 </body>
 </html>
+
+<style>
+    .annotation {
+      font-size: 8px;
+      fill: #333;
+    }
+  </style>
