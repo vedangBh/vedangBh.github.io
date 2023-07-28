@@ -1,4 +1,4 @@
-d3.csv("gdp_c.csv").then(function (data) {
+d3.csv("data/gdp_c.csv").then(function (data) {
     const margin = { top: 50, right: 50, bottom: 100, left: 100 };
     const width = 2500 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
