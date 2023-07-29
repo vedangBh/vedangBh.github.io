@@ -15,7 +15,8 @@
       margin-top: -5000px;
       margin-left: 100px; 
     }
-    #CountryWithLargestGDP {
+    #CountryWithLargestGDP,
+    #GroupWithLargestGDP {
       display: none; 
     }
   </style>
@@ -23,25 +24,28 @@
 <body>
   <h2 id="chart-title">GDP Visualization of Countries</h2>
   <h3 id="CountryWithLargestGDP">Country with the Largest GDP: USA</h3>
+  <h3 id="GroupWithLargestGDP">Group with the Largest GDP: World</h3>
   <div id="chart-container"></div>
   <input type="range" id="year-slider" min="0" max="60" step="1" value="0">
   <script src="script.js"></script>
   <script>
-    const h3Element = document.getElementById("CountryWithLargestGDP");
+    const h3Country = document.getElementById("CountryWithLargestGDP");
+    const h3Group = document.getElementById("GroupWithLargestGDP");
 
-    function showH3Element() {
-      h3Element.style.display = "block";
+    function showH3Elements() {
+      h3Country.style.display = "block";
+      h3Group.style.display = "block";
     }
 
-    function hideH3Element() {
-      h3Element.style.display = "none";
-      setTimeout(showH3Element, 1500);
+    function hideH3Elements() {
+      h3Country.style.display = "none";
+      h3Group.style.display = "none";
+      setTimeout(showH3Elements, 3000);
     }
 
-    setTimeout(showH3Element, 1000);
+    setTimeout(showH3Elements, 2000);
 
-    // Add event listener to the slider to hide and reappear the h3 element
-    document.getElementById("year-slider").addEventListener("input", hideH3Element);
+    document.getElementById("year-slider").addEventListener("input", hideH3Elements);
   </script>
 </body>
 </html>
