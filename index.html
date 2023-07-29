@@ -16,7 +16,7 @@
       margin-left: 100px; 
     }
     #CountryWithLargestGDP {
-      display: none; /* Hide the h3 element initially */
+      display: none; 
     }
   </style>
 </head>
@@ -27,21 +27,17 @@
   <input type="range" id="year-slider" min="0" max="60" step="1" value="0">
   <script src="script.js"></script>
   <script>
-    // JavaScript code to show/hide the h3 element on slider change and initially on page load
     const h3Element = document.getElementById("CountryWithLargestGDP");
 
-    // Function to make the h3 element appear after 2 seconds
     function showH3Element() {
       h3Element.style.display = "block";
     }
 
-    // Function to hide the h3 element and set a timeout to make it reappear after 3 seconds
     function hideH3Element() {
       h3Element.style.display = "none";
       setTimeout(showH3Element, 1500);
     }
 
-    // Delay the initial appearance of the h3 element by 2 seconds
     setTimeout(showH3Element, 1000);
 
     // Add event listener to the slider to hide and reappear the h3 element
