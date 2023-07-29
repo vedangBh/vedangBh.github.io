@@ -20,6 +20,32 @@ d3.csv("data/gdp_c.csv").then(function (data) {
     const years = Array.from(Array(61), (_, i) => 1960 + i);
     const xScale = d3.scaleLinear().domain([0, years.length - 1]).range([0, width]);
   
+    function calculateAverageGDP(yearIndex) {
+      const year = years[yearIndex];
+      const selectedYearData = data.map((d) => d[year]);
+      const totalGDP = selectedYearData.reduce((acc, gdp) => acc + gdp, 0);
+      const averageGDP = totalGDP / selectedYearData.length;
+      return (averageGDP / 1e12).toFixed(4); 
+    }
+  
+    const averageGDPAnnotation = {
+      note: {
+        label: "",
+        title: "Average GDP",
+        wrap: 150,
+      },
+      connector: {
+        end: "dot",
+        type: "line",
+      },
+      x: 0,
+      y: 0,
+      dy: 60,
+      dx: 0,
+    };
+  
+    let timeout; 
+  
     function update(yearIndex) {
       const year = years[yearIndex];
       const selectedYearData = data.map((d) => ({
@@ -46,7 +72,9 @@ d3.csv("data/gdp_c.csv").then(function (data) {
             .select("text")
             .style("font-size", "8px")
             .text(`Code: ${d.CountryCode}\nGDP: ${(d.GDP / 1e12).toFixed(4)} trillion USD`);
-          tooltip.style("display", "block").attr("transform", `translate(${mousePos[0]}, ${mousePos[1] - 100})`);
+          tooltip
+            .style("display", "block")
+            .attr("transform", `translate(${mousePos[0]}, ${mousePos[1] - 100})`);
         })
         .on("mouseout", function () {
           tooltip.style("display", "none");
@@ -81,48 +109,25 @@ d3.csv("data/gdp_c.csv").then(function (data) {
       const biggestChangeCountry = gdpChanges.find((d) => d.GDPChange === maxGDPChange);
       const smallestChangeCountry = gdpChanges.find((d) => d.GDPChange === minGDPChange);
   
-      const annotations = [
-        {
-          note: {
-            label: `Biggest Change: ${biggestChangeCountry.CountryName}\nGDP Change: ${maxGDPChange.toFixed(
-              2
-            )} trillion USD`,
-            title: "Biggest Change",
-          },
-          x: width / 4,
-          y: -30,
-          dx: 0,
-          dy: 0,
-          color: "red",
-          type: d3.annotationCallout,
-          subject: {
-            radius: 10,
-          },
-        },
-        {
-          note: {
-            label: `Smallest Change: ${smallestChangeCountry.CountryName}\nGDP Change: ${minGDPChange.toFixed(
-              2
-            )} trillion USD`,
-            title: "Smallest Change",
-          },
-          x: (width / 4) * 3,
-          y: -30,
-          dx: 0,
-          dy: 0,
-          color: "green",
-          type: d3.annotationCallout,
-          subject: {
-            radius: 10,
-          },
-        },
-      ];
+
   
       const makeAnnotations = d3.annotation().annotations(annotations);
   
       svg.selectAll(".annotation-group").remove();
   
       svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
+  
+      clearTimeout(timeout);
+  
+      timeout = setTimeout(() => {
+        const averageGDP = calculateAverageGDP(yearIndex);
+        averageGDPAnnotation.note.label = `Average GDP in ${years[yearIndex]}: ${averageGDP} trillion USD`;
+        averageGDPAnnotation.x = yearIndex * (width / (years.length - 1));  
+        averageGDPAnnotation.y = height + margin.bottom / 2; 
+        svg.selectAll(".annotation-group").remove();
+        const makeAnnotations = d3.annotation().annotations([averageGDPAnnotation]);
+        svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
+      }, 3000);
     }
   
     const tooltip = svg.append("g").attr("class", "tooltip").style("display", "none");
@@ -169,7 +174,7 @@ d3.csv("data/gdp_c.csv").then(function (data) {
       .append("text")
       .attr("class", "slider-label")
       .attr("x", (d) => d.position)
-      .attr("y",-10)
+      .attr("y", -10)
       .attr("text-anchor", "middle")
       .text((d) => d.label);
   
