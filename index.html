@@ -5,18 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Narrative Visualization</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://unpkg.com/d3-simple-slider"></script>
   <script src="https://unpkg.com/d3-annotation@3.1.1/build/d3-annotation.js"></script>
   <style>
     .annotation {
       font-size: 8px;
-      fill: #333;
+      fill: #b51616;
+    }
+    #year-slider {
+      width: 293%;
+      margin-top: -5000px;
+      margin-left: 100px; 
     }
   </style>
 </head>
 <body>
   <h2 id="chart-title">GDP Visualization of Countries</h2>
   <div id="chart-container"></div>
+  <input type="range" id="year-slider" min="0" max="60" step="1" value="0">
   <script src="script.js"></script>
 </body>
 </html>

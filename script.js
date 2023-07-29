@@ -20,19 +20,6 @@ d3.csv("data/gdp_c.csv").then(function (data) {
     const years = Array.from(Array(61), (_, i) => 1960 + i);
     const xScale = d3.scaleLinear().domain([0, years.length - 1]).range([0, width]);
   
-    const slider = d3
-      .sliderBottom(xScale)
-      .min(0)
-      .max(years.length - 1)
-      .step(1)
-      .width(width)
-      .tickFormat((d) => years[d])
-      .on("onchange", (val) => update(val));
-  
-    const gSlider = svg.append("g").attr("transform", `translate(0, ${height + margin.bottom / 2})`);
-  
-    gSlider.call(slider);
-  
     function update(yearIndex) {
       const year = years[yearIndex];
       const selectedYearData = data.map((d) => ({
@@ -54,13 +41,13 @@ d3.csv("data/gdp_c.csv").then(function (data) {
         .attr("r", 0)
         .attr("fill", "steelblue")
         .on("mouseover", function (event, d) {
-            const mousePos = d3.pointer(event, this); // Get the mouse position relative to the hovered element
-            tooltip
-              .select("text")
-              .style("font-size", "8px")
-              .text(`Code: ${d.CountryCode}\nGDP: ${(d.GDP / 1e12).toFixed(4)} trillion USD`);
-            tooltip.style("display", "block").attr("transform", `translate(${mousePos[0]}, ${mousePos[1] - 100})`);
-          })
+          const mousePos = d3.pointer(event, this);
+          tooltip
+            .select("text")
+            .style("font-size", "8px")
+            .text(`Code: ${d.CountryCode}\nGDP: ${(d.GDP / 1e12).toFixed(4)} trillion USD`);
+          tooltip.style("display", "block").attr("transform", `translate(${mousePos[0]}, ${mousePos[1] - 100})`);
+        })
         .on("mouseout", function () {
           tooltip.style("display", "none");
         })
@@ -83,21 +70,17 @@ d3.csv("data/gdp_c.csv").then(function (data) {
         .text((d) => d.CountryCode)
         .merge(labels);
   
-      // Calculate the GDP changes for each country
       const gdpChanges = selectedYearData.map((d) => ({
         CountryCode: d.CountryCode,
-        GDPChange: d.GDP - d[1960], // Change from the initial year (1960)
+        GDPChange: d.GDP - d[1960],
       }));
   
-      // Find the country with the biggest and smallest GDP changes
       const maxGDPChange = d3.max(gdpChanges, (d) => d.GDPChange);
       const minGDPChange = d3.min(gdpChanges, (d) => d.GDPChange);
   
-      // Filter the countries with the biggest and smallest GDP changes
       const biggestChangeCountry = gdpChanges.find((d) => d.GDPChange === maxGDPChange);
       const smallestChangeCountry = gdpChanges.find((d) => d.GDPChange === minGDPChange);
   
-      // Add annotations for the countries with the biggest and smallest GDP changes
       const annotations = [
         {
           note: {
@@ -106,7 +89,7 @@ d3.csv("data/gdp_c.csv").then(function (data) {
             )} trillion USD`,
             title: "Biggest Change",
           },
-          x: width / 4, // Position the annotation under the title
+          x: width / 4,
           y: -30,
           dx: 0,
           dy: 0,
@@ -123,7 +106,7 @@ d3.csv("data/gdp_c.csv").then(function (data) {
             )} trillion USD`,
             title: "Smallest Change",
           },
-          x: (width / 4) * 3, // Position the annotation under the title
+          x: (width / 4) * 3,
           y: -30,
           dx: 0,
           dy: 0,
@@ -135,13 +118,10 @@ d3.csv("data/gdp_c.csv").then(function (data) {
         },
       ];
   
-      // Create a new annotation layer
       const makeAnnotations = d3.annotation().annotations(annotations);
   
-      // Remove the existing annotation layer if present
       svg.selectAll(".annotation-group").remove();
   
-      // Append the new annotation layer to the SVG
       svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
     }
   
@@ -161,6 +141,37 @@ d3.csv("data/gdp_c.csv").then(function (data) {
       .attr("y", 20)
       .attr("fill", "white")
       .style("font-size", "12px");
+  
+    const yearSlider = document.getElementById("year-slider");
+    yearSlider.setAttribute("min", "0");
+    yearSlider.setAttribute("max", (years.length - 1).toString());
+    yearSlider.setAttribute("step", "1");
+    yearSlider.setAttribute("value", "0");
+  
+    yearSlider.addEventListener("input", function () {
+      update(+this.value);
+    });
+  
+    const sliderLabels = years.map((year, index) => ({
+      position: xScale(index),
+      label: year.toString(),
+    }));
+  
+    const sliderGroup = svg
+      .append("g")
+      .attr("class", "slider-group")
+      .attr("transform", `translate(0, ${height + margin.bottom / 2})`);
+  
+    sliderGroup
+      .selectAll(".slider-label")
+      .data(sliderLabels)
+      .enter()
+      .append("text")
+      .attr("class", "slider-label")
+      .attr("x", (d) => d.position)
+      .attr("y",-10)
+      .attr("text-anchor", "middle")
+      .text((d) => d.label);
   
     update(0);
   });
